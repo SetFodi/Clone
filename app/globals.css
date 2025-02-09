@@ -2,20 +2,182 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Global Styles */
+body {
+  @apply bg-gray-950 text-white overflow-x-hidden font-sans antialiased;
+  scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  @apply w-2 bg-transparent;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gradient-to-b from-blue-600 to-purple-600 rounded-full;
+}
+
+/* Scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.blue.600') theme('colors.gray.900');
+}
+
+/* Honeycomb Background Pattern */
+.honeycomb {
+  @apply flex flex-wrap justify-center gap-[2px] rotate-45;
+}
+
+.honeycomb-cell {
+  @apply w-10 h-10 bg-transparent border border-blue-500/10;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Gradient Text Utility */
+.gradient-text {
+  @apply bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent;
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 
+         font-bold text-white transition-all duration-300 
+         hover:shadow-xl hover:scale-[1.02] 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 rounded-lg bg-gray-800 text-white 
+         transition-colors duration-300 
+         hover:bg-gray-700 
+         focus:outline-none focus:ring-2 focus:ring-gray-600;
+}
+
+/* Card Styles */
+.card {
+  @apply bg-gradient-to-br from-gray-900 to-gray-800 
+         rounded-xl border border-blue-500/20 
+         backdrop-blur-sm 
+         transition-all duration-300 
+         hover:border-blue-500/40;
+}
+
+/* Network Visualization Styles */
+.network-node {
+  @apply absolute rounded-full opacity-60 
+         transition-all duration-1000 
+         ease-in-out;
+}
+
+/* Animated Gradient Border */
+.animated-border {
+  @apply relative overflow-hidden;
+}
+
+.animated-border::before {
+  content: '';
+  @apply absolute -inset-[2px] z-[-1] 
+         bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+         opacity-0 transition-opacity duration-300;
+  animation: border-dance 3s linear infinite;
+}
+
+.animated-border:hover::before {
+  @apply opacity-100;
+}
+
+@keyframes border-dance {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* Responsive Typography */
+h1 {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl font-semibold;
+}
+
+/* Utility Classes */
+.glass-morphism {
+  @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl;
+}
+
+.glow {
+  @apply transition-all duration-300 
+         hover:shadow-[0_0_20px_rgba(96,165,250,0.5)] 
+         hover:scale-[1.02];
+}
+
+/* Grid Layout Helpers */
+.grid-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* Hover Effects */
+.hover-lift {
+  @apply transition-all duration-300 
+         hover:-translate-y-2 
+         hover:shadow-lg;
+}
+
+/* Animation Keyframes */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Utilities */
+@screen sm {
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@screen md {
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@screen lg {
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    @apply bg-white text-black;
+  }
+  
+  .no-print {
+    display: none;
+  }
 }
