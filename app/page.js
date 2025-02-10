@@ -5,32 +5,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Tilt from "react-parallax-tilt";
 import {
+  Twitter,
+  Linkedin,
+  Github, // Note: Use 'Github' (all lowercase 'b')
+  Layers,
   Globe as IconGlobe,
   Shield,
   Zap,
   Server,
   Lock,
   Activity,
-  Wifi,
-  Layers,
-  Cpu,
-  Network,
-  Database,
   Rocket,
-  Compass,
 } from "lucide-react";
 
 /* -------------------------------------------------------------------
-   Navigation Component (Fixed Top-Left)
+   Navbar Component
 ------------------------------------------------------------------- */
 const Navigation = () => (
-  <nav className="fixed top-0 left-0 z-50 w-full bg-gray-950/80 backdrop-blur-md p-4">
+  <nav className="fixed top-0 left-0 z-50 w-full bg-gray-950/90 backdrop-blur-md p-4">
     <div className="container mx-auto flex items-center justify-between">
-      <div className="text-2xl font-bold text-white">Proxied</div>
-      <ul className="flex space-x-6 text-white">
+      <div className="flex items-center space-x-4">
+        <span className="text-2xl font-bold text-white">Proxied</span>
+      </div>
+      <ul className="flex items-center space-x-6 text-white">
         <li>
-          <a href="#faq" className="hover:text-blue-400">
-            F.A.Q
+          <a href="#why-proxied" className="hover:text-blue-400">
+            Why Choose
           </a>
         </li>
         <li>
@@ -39,18 +39,34 @@ const Navigation = () => (
           </a>
         </li>
         <li>
+          <a href="#faq" className="hover:text-blue-400">
+            FAQ
+          </a>
+        </li>
+        <li>
           <a href="#testimonials" className="hover:text-blue-400">
             Testimonials
           </a>
         </li>
         <li>
-          <a href="#enterprise-infrastructure" className="hover:text-blue-400">
-            Features
+          <a href="#contact" className="hover:text-blue-400">
+            Contact
+          </a>
+        </li>
+        {/* Social Media Icons */}
+        <li>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+            <Twitter className="w-5 h-5 hover:text-blue-400" />
           </a>
         </li>
         <li>
-          <a href="#cta" className="hover:text-blue-400">
-            Contact
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+            <Linkedin className="w-5 h-5 hover:text-blue-400" />
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+            <Github className="w-5 h-5 hover:text-blue-400" />
           </a>
         </li>
       </ul>
@@ -101,7 +117,7 @@ const LoadingAnimation = () => (
 );
 
 /* -------------------------------------------------------------------
-   Dynamic Network Visualization using SVG circles
+   Dynamic Network Visualization (Background)
 ------------------------------------------------------------------- */
 const NetworkVisualization = () => {
   const [nodes, setNodes] = useState([]);
@@ -190,50 +206,11 @@ const NetworkVisualization = () => {
 };
 
 /* -------------------------------------------------------------------
-   Animated Routing Paths using SVG polylines
+   (Optional) Remove or comment out the animated routing paths background
 ------------------------------------------------------------------- */
-const RoutingPathAnimation = () => {
-  const [paths, setPaths] = useState([]);
-
-  useEffect(() => {
-    const generatePaths = () =>
-      Array.from({ length: 5 }, (_, i) => ({
-        id: i,
-        points: [
-          `${Math.random() * 100},${Math.random() * 100}`,
-          `${Math.random() * 100},${Math.random() * 100}`,
-          `${Math.random() * 100},${Math.random() * 100}`,
-        ],
-      }));
-    setPaths(generatePaths());
-  }, []);
-
-  return (
-    <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 100 100">
-      {paths.map((path) => (
-        <motion.polyline
-          key={path.id}
-          fill="none"
-          stroke="#60A5FA"
-          strokeWidth="0.3"
-          points={path.points.join(" ")}
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{
-            pathLength: 1,
-            opacity: [0, 0.5, 0],
-            strokeDashoffset: [0, 100],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "linear",
-            delay: path.id * 0.5,
-          }}
-        />
-      ))}
-    </svg>
-  );
-};
+// const RoutingPathAnimation = () => {
+//   // This component is removed for a cleaner background effect.
+// };
 
 /* -------------------------------------------------------------------
    Fixed-position Animated Nodes (Background Dots)
@@ -583,6 +560,22 @@ const testimonials = [
   },
 ];
 
+const faqData = [
+  {
+    question: "What is a mobile proxy?",
+    answer:
+      "A mobile proxy routes your internet traffic through a mobile device’s IP address provided by a cellular network (4G or 5G). This makes your activity appear as if it's coming from a mobile user, offering high anonymity and access to geo-restricted content.",
+  },
+  {
+    question: "How do I connect my purchased proxies?",
+    answer:
+      "Proxy validity is clearly displayed in your dashboard. Typically, we offer weekly plans, but the exact duration may vary based on the plan you choose. You'll see a countdown (e.g., '7 days left') for each proxy in your account.",
+  },
+];
+
+/* -------------------------------------------------------------------
+   FAQ Section Component
+------------------------------------------------------------------- */
 const FAQSection = () => (
   <section id="faq" className="w-full py-32 bg-gray-800">
     <div className="max-w-7xl mx-auto px-6">
@@ -598,27 +591,246 @@ const FAQSection = () => (
         </h2>
       </motion.div>
       <div className="space-y-8">
-        <div className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm">
-          <h3 className="text-2xl font-bold text-blue-400">
-            What is a mobile proxy?
-          </h3>
-          <p className="text-gray-300 mt-2">
-            A mobile proxy routes your internet traffic through a mobile device’s IP address provided by a cellular network (4G or 5G). This makes your activity appear as if it's coming from a mobile user, offering high anonymity and access to geo-restricted content.
+        {faqData.map((item, index) => (
+          <FAQItem key={index} question={item.question} answer={item.answer} />
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* -------------------------------------------------------------------
+   FAQItem Component (Accordion)
+------------------------------------------------------------------- */
+const FAQItem = ({ question, answer }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm cursor-pointer"
+      onClick={() => setOpen((prev) => !prev)}
+    >
+      <h3 className="text-2xl font-bold text-blue-400">{question}</h3>
+      <AnimatePresence>
+        {open && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-gray-300 mt-2 overflow-hidden"
+          >
+            {answer}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+/* -------------------------------------------------------------------
+   Why Choose Proxied Section
+------------------------------------------------------------------- */
+const WhyChooseSection = () => (
+  <section id="why-proxied" className="w-full py-32 bg-gray-900">
+    <div className="max-w-7xl mx-auto px-6">
+      <motion.div
+        className="text-center mb-12"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
+          Why Choose Proxied?
+        </h2>
+        <p className="text-gray-300 text-xl max-w-2xl mx-auto">
+          Proxied offers secure, fast mobile proxies that empower your online presence.
+          Benefit from unmatched speed, robust security, and global reach that puts you ahead.
+        </p>
+      </motion.div>
+      <div className="grid md:grid-cols-2 gap-8">
+        {dashboardFeatures.map((feature, i) => (
+          <FeatureCard key={i} {...feature} />
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* -------------------------------------------------------------------
+   How It Works Section
+------------------------------------------------------------------- */
+// Accept currentStep as a prop so that the active screenshot can be highlighted.
+const HowItWorksSection = ({ currentStep }) => (
+  <section id="how-it-works" className="relative w-full py-32">
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl border border-blue-400/20 p-12 backdrop-blur-xl">
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
+            How It Works
+          </h2>
+          <p className="text-gray-300 text-xl max-w-2xl mx-auto">
+            Discover how our proxy orchestration engine automates and optimizes your proxy management.
           </p>
-        </div>
-        <div className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm">
-          <h3 className="text-2xl font-bold text-blue-400">
-            How do I connect my purchased proxies?
-          </h3>
-          <p className="text-gray-300 mt-2">
-            Proxy validity is clearly displayed in your dashboard. Typically, we offer weekly plans, but the exact duration may vary based on the plan you choose. You'll see a countdown (e.g., "7 days left") for each proxy in your account.
-          </p>
+        </motion.div>
+        <div className="grid lg:grid-cols-3 gap-12">
+          <div className="space-y-12">
+            {screenshots.map((step, index) => (
+              <Tilt key={step.id} tiltMaxAngleX={5} tiltMaxAngleY={5}>
+                <motion.div
+                  className={`p-6 bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-xl backdrop-blur-sm transition-all ${
+                    currentStep === index
+                      ? "border border-blue-400/100 shadow-lg"
+                      : "border border-blue-400/20"
+                  } hover:border-blue-400/40`}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                >
+                  <div
+                    className={`text-2xl mb-4 font-mono ${
+                      currentStep === index
+                        ? "bg-blue-500 text-white px-2 rounded"
+                        : "text-blue-400"
+                    }`}
+                  >
+                    0{index + 1}
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-3">{step.title}</h3>
+                  <p className="text-gray-300">{step.description}</p>
+                </motion.div>
+              </Tilt>
+            ))}
+          </div>
+          <div className="lg:col-span-2 relative h-[600px]">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl border border-blue-400/20">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentStep}
+                  className="absolute inset-0 p-8"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="relative h-full w-full bg-gray-900/50 rounded-xl overflow-hidden">
+                    <Image
+                      src={screenshots[currentStep].image}
+                      alt={screenshots[currentStep].title}
+                      width={700}
+                      height={850}
+                      className="object-contain"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-8">
+                        <div className="text-2xl font-mono text-blue-400 mb-4">
+                          {screenshots[currentStep].placeholderText}
+                        </div>
+                        <div className="h-1 bg-blue-900/50 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full bg-gradient-to-r from-blue-400 to-purple-400"
+                            initial={{ width: 0 }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 3.8, ease: "linear" }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 );
 
+/* -------------------------------------------------------------------
+   FAQ Section (Accordion)
+------------------------------------------------------------------- */
+
+
+/* -------------------------------------------------------------------
+   FAQItem Component (Accordion)
+   - Declared only once
+------------------------------------------------------------------- */
+/* -------------------------------------------------------------------
+   Testimonials Section
+------------------------------------------------------------------- */
+const TestimonialsSection = () => (
+  <section id="testimonials" className="w-full py-32 bg-gray-800">
+    <div className="max-w-7xl mx-auto px-6">
+      <motion.div
+        className="text-center mb-16"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
+          What Our Clients Say
+        </h2>
+      </motion.div>
+      <div className="grid md:grid-cols-3 gap-8">
+        {testimonials.map((testimonial) => (
+          <motion.div
+            key={testimonial.id}
+            className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: testimonial.id * 0.2 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-300 italic mb-4">
+              "{testimonial.quote}"
+            </p>
+            <div className="text-blue-400 font-semibold">
+              - {testimonial.name}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* -------------------------------------------------------------------
+   Contact Section
+------------------------------------------------------------------- */
+const ContactSection = () => (
+  <section id="contact" className="w-full py-32 bg-gray-900">
+    <div className="max-w-7xl mx-auto px-6 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
+          Contact Us
+        </h2>
+        <p className="text-gray-300 text-xl mb-8">
+          Have questions or need help? Reach out to us at{" "}
+          <a href="mailto:contact@proxied.com" className="text-blue-400 underline">
+            contact@proxied.com
+          </a>
+        </p>
+      </motion.div>
+    </div>
+  </section>
+);
+
+/* -------------------------------------------------------------------
+   Main Page Component
+------------------------------------------------------------------- */
 export default function HomePage() {
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -640,7 +852,7 @@ export default function HomePage() {
 
       {/* BACKGROUND LAYERS */}
       <NetworkVisualization />
-      <RoutingPathAnimation />
+      {/* RoutingPathAnimation has been removed for a cleaner background */}
       <HexagonGrid />
       <ParticleNetwork />
       <NetworkBackground />
@@ -678,7 +890,7 @@ export default function HomePage() {
             Experience unparalleled speed, security, and global reach.
           </motion.p>
           <motion.a
-            href="#cta"
+            href="#contact"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="mt-8 inline-block btn-primary"
@@ -713,222 +925,20 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* WHY CHOOSE PROXIED & FEATURES SECTION */}
+      <WhyChooseSection />
+
       {/* HOW IT WORKS SECTION */}
-      <section id="how-it-works" className="relative w-full py-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl border border-blue-400/20 p-12 backdrop-blur-xl">
-            <motion.div
-              className="text-center mb-20"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-            >
-              <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
-                Proxy Orchestration Engine
-              </h2>
-              <p className="text-gray-300 text-xl max-w-2xl mx-auto">
-                Automated proxy management with intelligent traffic routing and real-time performance optimization.
-              </p>
-            </motion.div>
-            <div className="grid lg:grid-cols-3 gap-12">
-              <div className="space-y-12">
-                {screenshots.map((step, index) => (
-                  <Tilt key={step.id} tiltMaxAngleX={5} tiltMaxAngleY={5}>
-                    <motion.div
-                      className={`p-6 bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-xl backdrop-blur-sm transition-all ${
-                        currentStep === index
-                          ? "border border-blue-400/100 shadow-lg"
-                          : "border border-blue-400/20"
-                      } hover:border-blue-400/40`}
-                      initial={{ opacity: 0, x: -30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.2 }}
-                    >
-                      <div
-                        className={`text-2xl mb-4 font-mono ${
-                          currentStep === index
-                            ? "bg-blue-500 text-white px-2 rounded"
-                            : "text-blue-400"
-                        }`}
-                      >
-                        0{index + 1}
-                      </div>
-                      <h3 className="text-2xl font-semibold mb-3">
-                        {step.title}
-                      </h3>
-                      <p className="text-gray-300">{step.description}</p>
-                    </motion.div>
-                  </Tilt>
-                ))}
-              </div>
-              <div className="lg:col-span-2 relative h-[600px]">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl border border-blue-400/20">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentStep}
-                      className="absolute inset-0 p-8"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.05 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <div className="relative h-full w-full bg-gray-900/50 rounded-xl overflow-hidden">
-                        <Image
-                          src={screenshots[currentStep].image}
-                          alt={screenshots[currentStep].title}
-                          width={700}
-                          height={850}
-                          className="object-contain"
-                          priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent">
-                          <div className="absolute bottom-0 left-0 right-0 p-8">
-                            <div className="text-2xl font-mono text-blue-400 mb-4">
-                              {screenshots[currentStep].placeholderText}
-                            </div>
-                            <div className="h-1 bg-blue-900/50 rounded-full overflow-hidden">
-                              <motion.div
-                                className="h-full bg-gradient-to-r from-blue-400 to-purple-400"
-                                initial={{ width: 0 }}
-                                animate={{ width: "100%" }}
-                                transition={{ duration: 3.8, ease: "linear" }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ENTERPRISE-GRADE INFRASTRUCTURE SECTION */}
-      <section id="enterprise-infrastructure" className="w-full py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Enterprise-Grade Infrastructure
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {dashboardFeatures.map((feature, i) => (
-              <FeatureCard key={i} {...feature} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* QUANTUM PROXY ARCHITECTURE SECTION */}
-      <section id="features" className="w-full py-32 bg-gradient-to-b from-gray-900 to-gray-950">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
-              Quantum Proxy Architecture
-            </h2>
-            <p className="text-gray-300 text-xl max-w-2xl mx-auto">
-              Next-generation proxy infrastructure with self-healing networks and predictive routing algorithms.
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {architectureFeatures.map((feature) => (
-              <Tilt
-                key={feature.id}
-                tiltMaxAngleX={5}
-                tiltMaxAngleY={5}
-                className="transition-transform duration-300"
-              >
-                <motion.div
-                  className="p-8 bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl border border-blue-400/20 backdrop-blur-sm flex flex-col items-center text-center"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: feature.id * 0.2 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="text-4xl mb-6">{feature.icon}</div>
-                  <h3 className="text-2xl font-semibold mb-4">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-300">{feature.description}</p>
-                  <div className="mt-6 h-[2px] bg-gradient-to-r from-blue-500/20 to-purple-500/20" />
-                </motion.div>
-              </Tilt>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS SECTION */}
-      <section id="testimonials" className="w-full py-32 bg-gray-800">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
-              What Our Clients Say
-            </h2>
-          </motion.div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <motion.div
-                key={testimonial.id}
-                className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: testimonial.id * 0.2 }}
-                viewport={{ once: true }}
-              >
-                <p className="text-gray-300 italic mb-4">
-                  "{testimonial.quote}"
-                </p>
-                <div className="text-blue-400 font-semibold">
-                  - {testimonial.name}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorksSection currentStep={currentStep} />
 
       {/* FAQ SECTION */}
       <FAQSection />
 
-      {/* CALL-TO-ACTION (CTA) SECTION */}
-      <section id="cta" className="w-full py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-              Ready to Supercharge Your Proxy Network?
-            </h2>
-            <p className="text-xl text-gray-100 mb-8">
-              Join the revolution and take your proxy infrastructure to the next level.
-            </p>
-            <motion.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              href="#"
-              className="inline-block btn-primary"
-            >
-              Get Started Now
-            </motion.a>
-          </motion.div>
-        </div>
-      </section>
+      {/* TESTIMONIALS SECTION */}
+      <TestimonialsSection />
+
+      {/* CONTACT SECTION */}
+      <ContactSection />
 
       {/* FOOTER */}
       <footer className="w-full py-12 bg-gray-900">
