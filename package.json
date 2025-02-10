@@ -16,6 +16,7 @@
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-globe.gl": "^2.31.3",
     "react-parallax-tilt": "^1.7.281",
     "react-tsparticles": "^2.12.2",
     "tsparticles": "^3.8.1"

@@ -1,16 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Tilt from "react-parallax-tilt";
 import {
-  Globe,
+  Globe as IconGlobe,
   Shield,
   Zap,
   Server,
@@ -25,16 +20,96 @@ import {
   Compass,
 } from "lucide-react";
 
-/* ──────────────────────────────────────────────────────────────── */
-/* BACKGROUND / VISUALIZATION COMPONENTS */
+/* -------------------------------------------------------------------
+   Navigation Component (Fixed Top-Left)
+------------------------------------------------------------------- */
+const Navigation = () => (
+  <nav className="fixed top-0 left-0 z-50 w-full bg-gray-950/80 backdrop-blur-md p-4">
+    <div className="container mx-auto flex items-center justify-between">
+      <div className="text-2xl font-bold text-white">Proxied</div>
+      <ul className="flex space-x-6 text-white">
+        <li>
+          <a href="#faq" className="hover:text-blue-400">
+            F.A.Q
+          </a>
+        </li>
+        <li>
+          <a href="#how-it-works" className="hover:text-blue-400">
+            How It Works
+          </a>
+        </li>
+        <li>
+          <a href="#testimonials" className="hover:text-blue-400">
+            Testimonials
+          </a>
+        </li>
+        <li>
+          <a href="#enterprise-infrastructure" className="hover:text-blue-400">
+            Features
+          </a>
+        </li>
+        <li>
+          <a href="#cta" className="hover:text-blue-400">
+            Contact
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+);
 
-// Dynamic Network Visualization using SVG circles
+/* -------------------------------------------------------------------
+   Gradient Background Component
+------------------------------------------------------------------- */
+const GradientBackground = () => (
+  <motion.div
+    className="absolute inset-0 z-[-1]"
+    animate={{
+      background: [
+        "linear-gradient(45deg, #1e3a8a, #9333ea)",
+        "linear-gradient(135deg, #9333ea, #1e3a8a)",
+        "linear-gradient(225deg, #1e3a8a, #9333ea)",
+        "linear-gradient(315deg, #9333ea, #1e3a8a)",
+      ],
+    }}
+    transition={{
+      duration: 10,
+      repeat: Infinity,
+      ease: "linear",
+    }}
+  />
+);
+
+/* -------------------------------------------------------------------
+   Loading Animation Component
+------------------------------------------------------------------- */
+const LoadingAnimation = () => (
+  <div className="flex items-center justify-center h-screen">
+    <motion.div
+      className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
+      animate={{
+        scale: [1, 1.5, 1],
+        opacity: [0.6, 1, 0.6],
+      }}
+      transition={{
+        duration: 1.5,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    />
+  </div>
+);
+
+/* -------------------------------------------------------------------
+   Dynamic Network Visualization using SVG circles
+------------------------------------------------------------------- */
 const NetworkVisualization = () => {
   const [nodes, setNodes] = useState([]);
+  const [connections, setConnections] = useState([]);
 
   useEffect(() => {
     const generateNodes = () =>
-      Array.from({ length: 100 }, (_, i) => ({
+      Array.from({ length: 50 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -42,12 +117,48 @@ const NetworkVisualization = () => {
         color: `hsl(${Math.random() * 360}, 70%, 60%)`,
         speed: Math.random() * 3 + 1,
       }));
-    setNodes(generateNodes());
+
+    const generateConnections = (nodes) => {
+      const connections = [];
+      nodes.forEach((node, i) => {
+        if (i < nodes.length - 1) {
+          connections.push({
+            id: `${node.id}-${nodes[i + 1].id}`,
+            from: { x: node.x, y: node.y },
+            to: { x: nodes[i + 1].x, y: nodes[i + 1].y },
+          });
+        }
+      });
+      return connections;
+    };
+
+    const newNodes = generateNodes();
+    setNodes(newNodes);
+    setConnections(generateConnections(newNodes));
   }, []);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
       <svg className="w-full h-full">
+        {connections.map((conn) => (
+          <motion.line
+            key={conn.id}
+            x1={`${conn.from.x}%`}
+            y1={`${conn.from.y}%`}
+            x2={`${conn.to.x}%`}
+            y2={`${conn.to.y}%`}
+            stroke="url(#lineGradient)"
+            strokeWidth="0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.5, 0] }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
         {nodes.map((node) => (
           <motion.circle
             key={node.id}
@@ -67,12 +178,20 @@ const NetworkVisualization = () => {
             }}
           />
         ))}
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#60a5fa" />
+            <stop offset="100%" stopColor="#9333ea" />
+          </linearGradient>
+        </defs>
       </svg>
     </div>
   );
 };
 
-// Animated Routing Paths using SVG polylines
+/* -------------------------------------------------------------------
+   Animated Routing Paths using SVG polylines
+------------------------------------------------------------------- */
 const RoutingPathAnimation = () => {
   const [paths, setPaths] = useState([]);
 
@@ -116,7 +235,9 @@ const RoutingPathAnimation = () => {
   );
 };
 
-// Fixed-position animated nodes
+/* -------------------------------------------------------------------
+   Fixed-position Animated Nodes (Background Dots)
+------------------------------------------------------------------- */
 const NetworkBackground = () => {
   const nodes = [
     { x: "10%", y: "20%", size: 12, color: "#60a5fa", delay: 0 },
@@ -154,28 +275,38 @@ const NetworkBackground = () => {
   );
 };
 
-// Randomized particles for extra background depth
+/* -------------------------------------------------------------------
+   Gradient Particle Trails Component
+------------------------------------------------------------------- */
 function ParticleNetwork() {
   const [particles, setParticles] = useState([]);
+
   useEffect(() => {
-    const newParticles = [...Array(50)].map(() => ({
+    const newParticles = Array.from({ length: 100 }, () => ({
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
       duration: 2 + Math.random() * 3,
       delay: Math.random() * 2,
+      trail: Array.from({ length: 10 }, () => ({
+        x: Math.random() * 20 - 10,
+        y: Math.random() * 20 - 10,
+      })),
     }));
     setParticles(newParticles);
   }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden">
       {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 bg-blue-400 rounded-full"
+          className="absolute w-1 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"
           style={{ left: p.left, top: p.top }}
           animate={{
             scale: [0.5, 1.2, 0.5],
             opacity: [0.3, 0.8, 0.3],
+            x: p.trail.map((t) => t.x),
+            y: p.trail.map((t) => t.y),
           }}
           transition={{
             duration: p.duration,
@@ -189,7 +320,9 @@ function ParticleNetwork() {
   );
 }
 
-// Faint hexagon pattern overlay
+/* -------------------------------------------------------------------
+   Faint Hexagon Pattern Overlay
+------------------------------------------------------------------- */
 const HexagonGrid = () => (
   <div className="absolute inset-0 opacity-10 z-0">
     <div className="honeycomb">
@@ -200,7 +333,9 @@ const HexagonGrid = () => (
   </div>
 );
 
-// Floating label bubbles (e.g. country codes)
+/* -------------------------------------------------------------------
+   Floating Label Bubbles (e.g., Country Codes)
+------------------------------------------------------------------- */
 const CyberBubble = ({ label, position, color }) => (
   <motion.div
     className={`absolute ${color} w-16 h-16 flex items-center justify-center rounded-xl border-2 border-blue-400/30 backdrop-blur-sm`}
@@ -221,7 +356,9 @@ const CyberBubble = ({ label, position, color }) => (
   </motion.div>
 );
 
-// Cluster of proxy nodes for visual effect
+/* -------------------------------------------------------------------
+   Cluster of Proxy Nodes (Visual Effect)
+------------------------------------------------------------------- */
 const ProxyCluster = () => {
   const [proxies, setProxies] = useState([]);
   useEffect(() => {
@@ -251,28 +388,23 @@ const ProxyCluster = () => {
   );
 };
 
-/* ──────────────────────────────────────────────────────────────── */
-/* DASHBOARD & FEATURE COMPONENTS */
-
-// Enhanced Status Dashboard (with live updating stats)
+/* -------------------------------------------------------------------
+   Enhanced Status Dashboard (Live Updating Stats)
+------------------------------------------------------------------- */
 const EnhancedStatusDashboard = () => {
   const [stats, setStats] = useState({
-    activeProxies: 2847,
-    uptime: 99.99,
-    dataTransferred: 1.45,
-    activeCountries: 95,
-    averageSpeed: 850,
-    securityScore: 99.7,
+    activeProxies: 2926,
+    activeCountries: 108,
+    averageSpeed: 1062,
+    securityScore: 100.0,
   });
 
   useEffect(() => {
     const interval = setInterval(() => {
       setStats((prev) => ({
-        activeProxies: prev.activeProxies + Math.floor(Math.random() * 10),
-        uptime: Math.min(100, prev.uptime + Math.random() * 0.01),
-        dataTransferred: prev.dataTransferred + Math.random() * 0.01,
+        activeProxies: prev.activeProxies + Math.floor(Math.random() * 5),
         activeCountries: prev.activeCountries + Math.floor(Math.random() * 2),
-        averageSpeed: prev.averageSpeed + Math.floor(Math.random() * 20),
+        averageSpeed: prev.averageSpeed + Math.floor(Math.random() * 10),
         securityScore: Math.min(100, prev.securityScore + Math.random() * 0.1),
       }));
     }, 2000);
@@ -288,7 +420,7 @@ const EnhancedStatusDashboard = () => {
     {
       label: "Global Reach",
       value: `${stats.activeCountries} Countries`,
-      icon: <Globe className="w-6 h-6 text-green-400" />,
+      icon: <IconGlobe className="w-6 h-6 text-green-400" />,
     },
     {
       label: "Average Speed",
@@ -323,11 +455,13 @@ const EnhancedStatusDashboard = () => {
   );
 };
 
-// FeatureCard for Enterprise-Grade Infrastructure
+/* -------------------------------------------------------------------
+   Feature Card Component with Neon Glow & Hover Effects
+------------------------------------------------------------------- */
 const FeatureCard = ({ title, description, icon: Icon }) => (
   <motion.div
     whileHover={{ scale: 1.02 }}
-    className="group relative p-6 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 border border-blue-500/10 hover:border-blue-500/30 transition-all duration-300"
+    className="group relative p-6 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 border border-blue-500/10 hover:border-blue-500/30 transition-all duration-300 neon-glow hover-glow"
   >
     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     <Icon className="w-12 h-12 text-blue-400 mb-4" />
@@ -342,43 +476,38 @@ const FeatureCard = ({ title, description, icon: Icon }) => (
   </motion.div>
 );
 
-/* ──────────────────────────────────────────────────────────────── */
-/* DATA ARRAYS */
-
-// "How It Works" Screenshots
+/* -------------------------------------------------------------------
+   Data Arrays
+------------------------------------------------------------------- */
 const screenshots = [
   {
     id: 1,
     title: "Browse Listings",
-    description:
-      "Access a global network of proxies with real-time availability.",
+    description: "Access a global network of proxies with real-time availability.",
     placeholderText: "Accessing Proxy Network...",
     image: "/proxy1.png",
   },
   {
     id: 2,
     title: "Select Your Proxy",
-    description:
-      "Filter by location, carrier, and performance metrics.",
+    description: "Filter by location, carrier, and performance metrics.",
     placeholderText: "Optimizing Connection...",
     image: "/proxy2.png",
   },
   {
     id: 3,
     title: "Connect & Scale",
-    description:
-      "Instant activation with automated rotation and scaling.",
+    description: "Instant activation with automated rotation and scaling.",
     placeholderText: "Establishing Secure Tunnel...",
     image: "/proxy3.png",
   },
 ];
 
-// Enterprise-Grade Infrastructure Features
 const dashboardFeatures = [
   {
     title: "Global Network",
     description: "Access points in 190+ countries",
-    icon: Globe,
+    icon: IconGlobe,
   },
   {
     title: "Enterprise Security",
@@ -407,12 +536,11 @@ const dashboardFeatures = [
   },
 ];
 
-// Quantum Proxy Architecture Features
 const architectureFeatures = [
   {
     id: 1,
     title: "Ultra Fast",
-    description: "Lightning-fast proxy connections with minimal latency.",
+    description: "Lightning proxy connections with minimal latency.",
     icon: "⚡",
   },
   {
@@ -435,7 +563,6 @@ const architectureFeatures = [
   },
 ];
 
-// Client Testimonials
 const testimonials = [
   {
     id: 1,
@@ -451,19 +578,50 @@ const testimonials = [
   },
   {
     id: 3,
-    quote:
-      "Incredible performance and unbeatable security. Highly recommended!",
+    quote: "Incredible performance and unbeatable security. Highly recommended!",
     name: "Carol, Security Lead at SafeWeb",
   },
 ];
 
-/* ──────────────────────────────────────────────────────────────── */
-/* MAIN PAGE COMPONENT */
+const FAQSection = () => (
+  <section id="faq" className="w-full py-32 bg-gray-800">
+    <div className="max-w-7xl mx-auto px-6">
+      <motion.div
+        className="text-center mb-16"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
+          FAQ
+        </h2>
+      </motion.div>
+      <div className="space-y-8">
+        <div className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm">
+          <h3 className="text-2xl font-bold text-blue-400">
+            What is a mobile proxy?
+          </h3>
+          <p className="text-gray-300 mt-2">
+            A mobile proxy routes your internet traffic through a mobile device’s IP address provided by a cellular network (4G or 5G). This makes your activity appear as if it's coming from a mobile user, offering high anonymity and access to geo-restricted content.
+          </p>
+        </div>
+        <div className="p-6 bg-gray-900 rounded-xl border border-blue-400/20 backdrop-blur-sm">
+          <h3 className="text-2xl font-bold text-blue-400">
+            How do I connect my purchased proxies?
+          </h3>
+          <p className="text-gray-300 mt-2">
+            Proxy validity is clearly displayed in your dashboard. Typically, we offer weekly plans, but the exact duration may vary based on the plan you choose. You'll see a countdown (e.g., "7 days left") for each proxy in your account.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
 export default function HomePage() {
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Cycle through "How It Works" screenshots every 4 seconds
   useEffect(() => {
     const timer = setInterval(
       () => setCurrentStep((prev) => (prev + 1) % screenshots.length),
@@ -473,7 +631,13 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-gray-950 text-white overflow-x-hidden">
+    <main
+      className="relative min-h-screen bg-gray-950 text-white overflow-x-hidden scroll-smooth"
+      style={{ scrollBehavior: "smooth" }}
+    >
+      {/* NAVIGATION */}
+      <Navigation />
+
       {/* BACKGROUND LAYERS */}
       <NetworkVisualization />
       <RoutingPathAnimation />
@@ -493,28 +657,59 @@ export default function HomePage() {
       />
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center justify-center px-4">
-        <div className="relative z-10 max-w-4xl text-center">
+      <section className="relative pt-24 min-h-screen flex flex-col items-center justify-center px-4">
+        <GradientBackground />
+        <div className="relative z-10 text-center">
           <motion.h1
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
+            transition={{ duration: 1 }}
+            className="text-7xl md:text-8xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
           >
-          Proxied 
+            Proxied
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto"
+            transition={{ delay: 0.5, duration: 1 }}
+            className="mt-6 text-2xl md:text-3xl text-gray-300 max-w-3xl mx-auto"
           >
-            Next-generation proxy infrastructure with AI-powered routing, military-grade
-            encryption, and global reach.
+            Empowering your online presence with secure, fast mobile proxies.
+            Experience unparalleled speed, security, and global reach.
           </motion.p>
-          {/* You can add a CTA button or link here if desired */}
-          <div className="mt-16">
-            <EnhancedStatusDashboard />
-          </div>
+          <motion.a
+            href="#cta"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-8 inline-block btn-primary"
+          >
+            Get Started
+          </motion.a>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              delay: 1.5,
+              duration: 1,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+            className="mt-12"
+          >
+            <svg
+              className="w-8 h-8 mx-auto animate-bounce text-blue-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </motion.div>
         </div>
       </section>
 
@@ -532,8 +727,7 @@ export default function HomePage() {
                 Proxy Orchestration Engine
               </h2>
               <p className="text-gray-300 text-xl max-w-2xl mx-auto">
-                Automated proxy management with intelligent traffic routing and real-time
-                performance optimization.
+                Automated proxy management with intelligent traffic routing and real-time performance optimization.
               </p>
             </motion.div>
             <div className="grid lg:grid-cols-3 gap-12">
@@ -541,12 +735,22 @@ export default function HomePage() {
                 {screenshots.map((step, index) => (
                   <Tilt key={step.id} tiltMaxAngleX={5} tiltMaxAngleY={5}>
                     <motion.div
-                      className="p-6 bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-xl border border-blue-400/20 backdrop-blur-sm hover:border-blue-400/40 transition-all"
+                      className={`p-6 bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-xl backdrop-blur-sm transition-all ${
+                        currentStep === index
+                          ? "border border-blue-400/100 shadow-lg"
+                          : "border border-blue-400/20"
+                      } hover:border-blue-400/40`}
                       initial={{ opacity: 0, x: -30 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.2 }}
                     >
-                      <div className="text-blue-400 text-2xl mb-4 font-mono">
+                      <div
+                        className={`text-2xl mb-4 font-mono ${
+                          currentStep === index
+                            ? "bg-blue-500 text-white px-2 rounded"
+                            : "text-blue-400"
+                        }`}
+                      >
                         0{index + 1}
                       </div>
                       <h3 className="text-2xl font-semibold mb-3">
@@ -569,7 +773,6 @@ export default function HomePage() {
                       transition={{ duration: 0.5 }}
                     >
                       <div className="relative h-full w-full bg-gray-900/50 rounded-xl overflow-hidden">
-                        <ProxyCluster />
                         <Image
                           src={screenshots[currentStep].image}
                           alt={screenshots[currentStep].title}
@@ -631,8 +834,7 @@ export default function HomePage() {
               Quantum Proxy Architecture
             </h2>
             <p className="text-gray-300 text-xl max-w-2xl mx-auto">
-              Next-generation proxy infrastructure with self-healing networks and
-              predictive routing algorithms.
+              Next-generation proxy infrastructure with self-healing networks and predictive routing algorithms.
             </p>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -699,6 +901,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* FAQ SECTION */}
+      <FAQSection />
+
       {/* CALL-TO-ACTION (CTA) SECTION */}
       <section id="cta" className="w-full py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-7xl mx-auto px-6 text-center">
@@ -711,14 +916,13 @@ export default function HomePage() {
               Ready to Supercharge Your Proxy Network?
             </h2>
             <p className="text-xl text-gray-100 mb-8">
-              Join the revolution and take your proxy infrastructure to the next
-              level.
+              Join the revolution and take your proxy infrastructure to the next level.
             </p>
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               href="#"
-              className="inline-block bg-gray-900 px-8 py-4 rounded-xl font-bold shadow-2xl shadow-blue-500/20"
+              className="inline-block btn-primary"
             >
               Get Started Now
             </motion.a>
